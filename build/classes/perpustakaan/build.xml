@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="perpustakaan" default="jar" basedir=".">
+    <!-- Set the source and build directories -->
+    <property name="src.dir" value="src"/>
+    <property name="build.dir" value="build"/>
+    <property name="dist.dir" value="dist"/>
+    <property name="lib.dir" value="lib"/>
+    <property name="classes.dir" value="${build.dir}/classes"/>
+    
+    <!-- Clean build directory -->
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+        <delete dir="${dist.dir}"/>
+    </target>
+    
+    <!-- Compile source code -->
+    <target name="compile" depends="clean">
+        <mkdir dir="${classes.dir}"/>
+        <javac srcdir="${src.dir}" destdir="${classes.dir}">
+            <classpath>
+                <fileset dir="${lib.dir}">
+                    <include name="**/*.jar"/>
+                </fileset>
+            </classpath>
+        </javac>
+    </target>
+    
+    <!-- Compile JasperReports .jrxml files -->
+    <target name="compile-reports" depends="compile">
+        <mkdir dir="${classes.dir}/reports"/>
+        <javac srcdir="${src.dir}/reports" destdir="${classes.dir}/reports">
+            <classpath>
+                <fileset dir="${lib.dir}">
+                    <include name="**/*.jar"/>
+                </fileset>
+            </classpath>
+        </javac>
+    </target>
+    
+    <!-- Create JAR file -->
+    <target name="jar" depends="compile-reports">
+        <mkdir dir="${dist.dir}"/>
+        <jar destfile="${dist.dir}/perpustakaan.jar" basedir="${classes.dir}">
+            <manifest>
+                <attribute name="Main-Class" value="perpustakaan.perpustakaan"/>
+            </manifest>
+        </jar>
+    </target>
+    
+    <!-- Run application -->
+    <target name="run" depends="jar">
+        <java jar="${dist.dir}/perpustakaan.jar" fork="true">
+            <jvmarg value="--add-opens=java.base/java.util=ALL-UNNAMED"/>
+        </java>
+    </target>
+</project>
